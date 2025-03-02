@@ -108,12 +108,12 @@
         }
         function paintStroke(x, y) {
             const sampledColor = getColorAt(x,y);
-                color = lerpColor(sampledColor, brushColor, 0.5);
+                brushColor = lerpColor(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
 
             // Draw shadow
-            ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+            ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
             ctx.shadowBlur = 10;
             ctx.shadowOffsetX = 3;
             ctx.shadowOffsetY = 3;
@@ -134,6 +134,7 @@
             ctx.arc(x + 5, y + 5, 5, 0, Math.PI * 2);
             ctx.fill();
             ctx.globalAlpha = 1.0;
+            
         }
 
         function interpolateAndDraw(x0, y0, x1, y1) {
