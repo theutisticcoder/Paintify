@@ -91,9 +91,51 @@
     // Return the final blended color in RGBA format
     return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
+function sampleAndBlend(x, y) {
+    const sampleRadius = 10; // Adjust for how much surrounding paint you want to sample
+    let sampledColor = "rgba(255, 255, 255, 1)"; // Default to white if no color found
+
+    let r = 0, g = 0, b = 0, a = 0, count = 0;
+
+    // Sample a grid of pixels around the cursor
+    for (let dx = -sampleRadius; dx <= sampleRadius; dx++) {
+        for (let dy = -sampleRadius; dy <= sampleRadius; dy++) {
+            const offsetX = Math.round(x + dx);
+            const offsetY = Math.round(y + dy);
+
+            if (offsetX < 0 || offsetY < 0 || offsetX >= canvas.width || offsetY >= canvas.height) {
+                continue;
+            }
+
+            // Get color of the sampled pixel
+            const currentColor = getColorAt(offsetX, offsetY);
+            const rgba = currentColor.match(/\d+/g).map(Number);
+            
+            r += rgba[0];
+            g += rgba[1];
+            b += rgba[2];
+            a += rgba[3];
+            count++;
+        }
+    }
+
+    if (count > 0) {
+        // Calculate the average color of the sampled pixels
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+        a = Math.floor(a / count) / 255;
+
+        // Mix the brush color with the sampled color
+        const mixedColor = mixColors(`rgba(${r}, ${g}, ${b}, ${a})`, brushColor, 0.7); // Blend ratio 0.7
+        return mixedColor;
+    }
+
+    return brushColor; // Default to the brush color if no pixels were sampled
+}
+
         function paintStroke(x, y) {
-            const sampledColor = getColorAt(x,y);
-                color = mixColors(sampledColor, brushColor, 0.5);
+                color = sampleAndBlend(x, y);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
 
