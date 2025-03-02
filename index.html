@@ -5,15 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realistic Oil Painting</title>
     <style>
-        body { text-align: center; background: #222; }
-        canvas { background: white; cursor: crosshair; }
+        body { text-align: center; background: #222; color: white; }
+        canvas { background: white; cursor: crosshair; display: block; margin: auto; }
+        #controls { margin-bottom: 10px; }
+        input[type="color"] { width: 50px; height: 30px; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
+    <div id="controls">
+        <label for="colorPicker">🎨 Pick Color:</label>
+        <input type="color" id="colorPicker" value="#aa7733">
+    </div>
     <canvas id="canvas"></canvas>
+
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
+        const colorPicker = document.getElementById("colorPicker");
 
         // Resize canvas
         canvas.width = window.innerWidth;
@@ -21,15 +29,23 @@
 
         let painting = false;
         let lastX, lastY;
+        let brushColor = colorPicker.value;
 
         // Load brush texture
         const brush = new Image();
-brush.src = "oil.png"
+        brush.src = "oil.png"; // Replace with a better texture if needed
+
+        // Update color when user picks a new one
+        colorPicker.addEventListener("input", (e) => {
+            brushColor = e.target.value;
+        });
+
         function paintStroke(x, y, color) {
             ctx.globalAlpha = 0.9;
             ctx.globalCompositeOperation = "source-over";
             ctx.fillStyle = color;
 
+            // Paint using brush texture
             ctx.drawImage(brush, x - 10, y - 10, 30, 30);
         }
 
@@ -62,8 +78,7 @@ brush.src = "oil.png"
         function draw(e) {
             if (!painting) return;
 
-            let color = "#aa7733"; // Brownish oil paint tone
-            paintStroke(e.offsetX, e.offsetY, color);
+            paintStroke(e.offsetX, e.offsetY, brushColor);
             smudge(e.offsetX, e.offsetY);
 
             lastX = e.offsetX;
