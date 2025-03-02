@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oil Painting Effect</title>
+    <title>Realistic Oil Painting</title>
     <style>
         body { text-align: center; background: #222; }
         canvas { background: white; cursor: crosshair; }
@@ -15,45 +15,39 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
-        // Resize canvas to fill window
+        // Resize canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         let painting = false;
         let lastX, lastY;
 
-        // Perlin Noise Function
-        function perlinNoise(x, y) {
-            return Math.sin(x * 0.05) * Math.cos(y * 0.05) * 255;
-        }
+        // Load brush texture
+        const brush = new Image();
+        brush.src = "https://upload.wikimedia.org/wikipedia/commons/3/34/Oil_paint_texture.jpg"; // Use a real oil texture
 
         function paintStroke(x, y, color) {
-            ctx.globalAlpha = 0.6;
-            ctx.strokeStyle = color;
-            ctx.lineWidth = Math.random() * 5 + 5;
-            ctx.lineCap = "round";
+            ctx.globalAlpha = 0.9;
+            ctx.globalCompositeOperation = "source-over";
+            ctx.fillStyle = color;
 
-            for (let i = 0; i < 5; i++) { 
-                ctx.beginPath();
-                ctx.moveTo(x + Math.random() * 4 - 2, y + Math.random() * 4 - 2);
-                ctx.lineTo(x + Math.random() * 20 - 10, y + Math.random() * 20 - 10);
-                ctx.stroke();
-            }
+            ctx.drawImage(brush, x - 10, y - 10, 30, 30);
         }
 
         function smudge(x, y) {
-            const radius = 10;
-            let imgData = ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+            ctx.globalCompositeOperation = "lighter";
+            let imgData = ctx.getImageData(x - 10, y - 10, 20, 20);
             let pixels = imgData.data;
 
             for (let i = 0; i < pixels.length; i += 4) {
-                let noise = 0;
-                pixels[i] = (pixels[i] + noise) / 2;
-                pixels[i+1] = (pixels[i+1] + noise) / 2;
-                pixels[i+2] = (pixels[i+2] + noise) / 2;
+                let r = pixels[i], g = pixels[i+1], b = pixels[i+2];
+                let avg = (r + g + b) / 3;
+                pixels[i] = avg;
+                pixels[i+1] = avg;
+                pixels[i+2] = avg;
             }
 
-            ctx.putImageData(imgData, x - radius, y - radius);
+            ctx.putImageData(imgData, x - 10, y - 10);
         }
 
         function startPainting(e) {
@@ -69,7 +63,7 @@
         function draw(e) {
             if (!painting) return;
 
-            let color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            let color = "#aa7733"; // Brownish oil paint tone
             paintStroke(e.offsetX, e.offsetY, color);
             smudge(e.offsetX, e.offsetY);
 
