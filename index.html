@@ -71,6 +71,7 @@
         function getColorAt(x, y) {
             if (isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) {
         return "rgba(255, 255, 255, 1)"; // Default to white if out of bounds
+            }
             console.log(x + "," + y)
             const imgData = ctx.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
             return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
