@@ -69,7 +69,7 @@
             brushCtx.putImageData(imgData, 0, 0);
         }
         function getColorAt(x, y) {
-            const imgData = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data;
+            const imgData = ctx.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
             return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
         }
 
