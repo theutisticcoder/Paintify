@@ -83,7 +83,7 @@
                 1)`;
         }
         function paintStroke(x, y) {
-            const sampledColor = getColorAt(x, y);
+            const sampledColor = getColorAt(BigInt(x), BigInt(y));
                 color = mixColors(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
