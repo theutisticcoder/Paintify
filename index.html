@@ -78,14 +78,19 @@
         }
 
         function mixColors(color1, color2, mixRatio) {
-            const c1 = color1.match(/\d+/g).map(Number);
-            const c2 = color2.match(/\d+/g).map(Number);
-            return `rgba(
-                ${Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio)},
-                ${Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio)},
-                ${Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio)},
-                1)`;
-        }
+    // Extract RGBA components
+    const rgba1 = color1.match(/\d+/g).map(Number);
+    const rgba2 = color2.match(/\d+/g).map(Number);
+    
+    // Calculate blended RGB values
+    const r = Math.floor(rgba1[0] * (1 - mixRatio) + rgba2[0] * mixRatio);
+    const g = Math.floor(rgba1[1] * (1 - mixRatio) + rgba2[1] * mixRatio);
+    const b = Math.floor(rgba1[2] * (1 - mixRatio) + rgba2[2] * mixRatio);
+    const a = Math.min(1, Math.max(0, rgba1[3] * (1 - mixRatio) + rgba2[3] * mixRatio)); // Alpha blending
+    
+    // Return the final blended color in RGBA format
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
         function paintStroke(x, y) {
             const sampledColor = getColorAt(x,y);
                 color = mixColors(sampledColor, brushColor, 0.5);
