@@ -68,8 +68,23 @@
 
             brushCtx.putImageData(imgData, 0, 0);
         }
+        function getColorAt(x, y) {
+            const imgData = ctx.getImageData(x, y, 1, 1).data;
+            return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
+        }
 
+        function mixColors(color1, color2, mixRatio) {
+            const c1 = color1.match(/\d+/g).map(Number);
+            const c2 = color2.match(/\d+/g).map(Number);
+            return `rgba(
+                ${Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio)},
+                ${Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio)},
+                ${Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio)},
+                1)`;
+        }
         function paintStroke(x, y) {
+            const sampledColor = getColorAt(x, y);
+                color = mixColors(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
 
