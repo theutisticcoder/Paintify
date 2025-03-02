@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Painting Effect</title>
+    <style>
+        body { text-align: center; background: #222; }
+        canvas { background: white; cursor: crosshair; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Resize canvas to fill window
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let painting = false;
+        let lastX, lastY;
+
+        // Perlin Noise Function
+        function perlinNoise(x, y) {
+            return Math.sin(x * 0.05) * Math.cos(y * 0.05) * 255;
+        }
+
+        function paintStroke(x, y, color) {
+            ctx.globalAlpha = 0.6;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.random() * 5 + 5;
+            ctx.lineCap = "round";
+
+            for (let i = 0; i < 5; i++) { 
+                ctx.beginPath();
+                ctx.moveTo(x + Math.random() * 4 - 2, y + Math.random() * 4 - 2);
+                ctx.lineTo(x + Math.random() * 20 - 10, y + Math.random() * 20 - 10);
+                ctx.stroke();
+            }
+        }
+
+        function smudge(x, y) {
+            const radius = 10;
+            let imgData = ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+            let pixels = imgData.data;
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                let noise = perlinNoise(x, y);
+                pixels[i] = (pixels[i] + noise) / 2;
+                pixels[i+1] = (pixels[i+1] + noise) / 2;
+                pixels[i+2] = (pixels[i+2] + noise) / 2;
+            }
+
+            ctx.putImageData(imgData, x - radius, y - radius);
+        }
+
+        function startPainting(e) {
+            painting = true;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
+
+        function stopPainting() {
+            painting = false;
+        }
+
+        function draw(e) {
+            if (!painting) return;
+
+            let color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            paintStroke(e.offsetX, e.offsetY, color);
+            smudge(e.offsetX, e.offsetY);
+
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
+
+        canvas.addEventListener("mousedown", startPainting);
+        canvas.addEventListener("mouseup", stopPainting);
+        canvas.addEventListener("mousemove", draw);
+    </script>
+</body>
+</html>
