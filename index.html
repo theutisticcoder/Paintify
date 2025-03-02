@@ -18,14 +18,19 @@
     </div>
     <canvas id="canvas"></canvas>
 
+    <canvas id="canvas2" hidden></canvas>
+
     <script>
         const canvas = document.getElementById("canvas");
+        const canvas2 = document.getElementById("canvas2");
         const ctx = canvas.getContext("2d");
         const colorPicker = document.getElementById("colorPicker");
 
         // Resize canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        canvas2.width = window.innerWidth;
+        canvas2.height = window.innerHeight;
 
         let painting = false;
         let brushColor = colorPicker.value;
@@ -38,6 +43,7 @@
         // Off-screen canvas for recoloring
         const brushCanvas = document.createElement("canvas");
         const brushCtx = brushCanvas.getContext("2d");
+        const ctx2 = canvas2.getContext("2d");
 
         brush.onload = function () {
             brushCanvas.width = brush.width;
@@ -73,69 +79,22 @@
         return "rgba(255, 255, 255, 1)"; // Default to white if out of bounds
             }
             console.log(x + "," + y)
-            const imgData = ctx.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
+            const imgData = ctx2.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
             return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
         }
 
         function mixColors(color1, color2, mixRatio) {
-    // Extract RGBA components
-    const rgba1 = color1.match(/\d+/g).map(Number);
-    const rgba2 = color2.match(/\d+/g).map(Number);
-    
-    // Calculate blended RGB values
-    const r = Math.floor(rgba1[0] * (1 - mixRatio) + rgba2[0] * mixRatio);
-    const g = Math.floor(rgba1[1] * (1 - mixRatio) + rgba2[1] * mixRatio);
-    const b = Math.floor(rgba1[2] * (1 - mixRatio) + rgba2[2] * mixRatio);
-    const a = Math.min(1, Math.max(0, rgba1[3] * (1 - mixRatio) + rgba2[3] * mixRatio)); // Alpha blending
-    
-    // Return the final blended color in RGBA format
-    return `rgba(${r}, ${g}, ${b}, ${a})`;
-}
-function sampleAndBlend(x, y) {
-    const sampleRadius = 10; // Adjust for how much surrounding paint you want to sample
-    let sampledColor = "rgba(255, 255, 255, 1)"; // Default to white if no color found
-
-    let r = 0, g = 0, b = 0, a = 0, count = 0;
-
-    // Sample a grid of pixels around the cursor
-    for (let dx = -sampleRadius; dx <= sampleRadius; dx++) {
-        for (let dy = -sampleRadius; dy <= sampleRadius; dy++) {
-            const offsetX = Math.round(x + dx);
-            const offsetY = Math.round(y + dy);
-
-            if (offsetX < 0 || offsetY < 0 || offsetX >= canvas.width || offsetY >= canvas.height) {
-                continue;
-            }
-
-            // Get color of the sampled pixel
-            const currentColor = getColorAt(offsetX, offsetY);
-            const rgba = currentColor.match(/\d+/g).map(Number);
-            
-            r += rgba[0];
-            g += rgba[1];
-            b += rgba[2];
-            a += rgba[3];
-            count++;
+            const c1 = color1.match(/\d+/g).map(Number);
+            const c2 = color2.match(/\d+/g).map(Number);
+            return `rgba(
+                ${Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio)},
+                ${Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio)},
+                ${Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio)},
+                1)`;
         }
-    }
-
-    if (count > 0) {
-        // Calculate the average color of the sampled pixels
-        r = Math.floor(r / count);
-        g = Math.floor(g / count);
-        b = Math.floor(b / count);
-        a = Math.floor(a / count) / 255;
-
-        // Mix the brush color with the sampled color
-        const mixedColor = mixColors(`rgba(${r}, ${g}, ${b}, ${a})`, brushColor, 0.7); // Blend ratio 0.7
-        return mixedColor;
-    }
-
-    return brushColor; // Default to the brush color if no pixels were sampled
-}
-
         function paintStroke(x, y) {
-                color = sampleAndBlend(x, y);
+            const sampledColor = getColorAt(x,y);
+                color = mixColors(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
 
@@ -177,6 +136,9 @@ function sampleAndBlend(x, y) {
 
         function startPainting(e) {
             painting = true;
+            var shot = new Image()
+            shot.src = canvas.toDataURL("image/png");
+            ctx2.drawImage(shot, 0,0, canvas.width, canvas.height)
             lastX = e.offsetX;
             lastY = e.offsetY;
             paintStroke(lastX, lastY);
