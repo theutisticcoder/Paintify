@@ -142,8 +142,9 @@
                         pixels[i + 2] = Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio);; // B
                     }
                 }
-                brushCtx.putImageData(imgData, 0, 0);
             }
+                brushCtx.putImageData(imgData, 0, 0);
+            
         }
         var sampledColor;
         function paintStroke(x, y) {
