@@ -1,16 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realistic Oil Painting</title>
     <style>
-        body { text-align: center; background: #222; color: white; }
-        canvas { background: white; cursor: crosshair; display: block; margin: auto; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); }
-        #controls { margin-bottom: 10px; }
-        input[type="color"] { width: 50px; height: 30px; border: none; cursor: pointer; }
+        body {
+            text-align: center;
+            background: #222;
+            color: white;
+        }
+
+        canvas {
+            background: white;
+            cursor: crosshair;
+            display: block;
+            margin: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        #controls {
+            margin-bottom: 10px;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
     <div id="controls">
         <label for="colorPicker">🎨 Pick Color:</label>
@@ -76,7 +98,7 @@
         }
         function getColorAt(x, y) {
             if (isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) {
-        return "rgba(255, 255, 255, 1)"; // Default to white if out of bounds
+                return "rgba(255, 255, 255, 1)"; // Default to white if out of bounds
             }
             console.log(x + "," + y)
             const imgData = ctx2.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
@@ -102,21 +124,32 @@
             const c2 = color2.match(/\d+/g).map(Number);
             let imgData = brushCtx.getImageData(0, 0, brushCanvas.width, brushCanvas.height);
             let pixels = imgData.data;
-
-            for (let i = 0; i < pixels.length; i += 4) {
-                if (pixels[i + 3] > 0) { // Color only non-transparent pixels
-                    pixels[i] = Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio); // R
-                    pixels[i + 1] =  Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio);; // G
-                    pixels[i + 2] =  Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio);; // B
+            if (c1[3] === 0) {
+                for (let i = 0; i < pixels.length; i += 4) {
+                    if (pixels[i + 3] > 0) { // Color only non-transparent pixels
+                        pixels[i] = Math.floor(c2); // R
+                        pixels[i + 1] = Math.floor(c2);// G
+                        pixels[i + 2] = Math.floor(c2); // B
+                    }
                 }
+
             }
-            brushCtx.putImageData(imgData, 0, 0);
-}
+            else {
+                for (let i = 0; i < pixels.length; i += 4) {
+                    if (pixels[i + 3] > 0) { // Color only non-transparent pixels
+                        pixels[i] = Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio); // R
+                        pixels[i + 1] = Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio);; // G
+                        pixels[i + 2] = Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio);; // B
+                    }
+                }
+                brushCtx.putImageData(imgData, 0, 0);
+            }
+        }
         var sampledColor;
         function paintStroke(x, y) {
-             sampledColor = getColorAt(x,y);
-             
-                mixColors(sampledColor, brushColor, 0.5);
+            sampledColor = getColorAt(x, y);
+
+            mixColors(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
 
@@ -142,7 +175,7 @@
             ctx.arc(x + 5, y + 5, 5, 0, Math.PI * 2);
             ctx.fill();
             ctx.globalAlpha = 1.0;
-            
+
         }
 
         function interpolateAndDraw(x0, y0, x1, y1) {
@@ -160,7 +193,7 @@
 
         function startPainting(e) {
             painting = true;
-            
+
             lastX = e.offsetX;
             lastY = e.offsetY;
             paintStroke(lastX, lastY);
@@ -168,7 +201,7 @@
 
         function stopPainting() {
             shot.src = canvas.toDataURL("image/png");
-            ctx2.drawImage(shot, 0,0, canvas.width, canvas.height)
+            ctx2.drawImage(shot, 0, 0, canvas.width, canvas.height)
             painting = false;
         }
 
@@ -184,4 +217,5 @@
         canvas.addEventListener("mousemove", draw);
     </script>
 </body>
+
 </html>
