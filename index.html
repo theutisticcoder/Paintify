@@ -80,6 +80,7 @@
             }
             console.log(x + "," + y)
             const imgData = ctx2.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
+            if(parseInt(imgData[3]) === 0) return `rgba(255,255,255,1.0)`
             return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
         }
         function lerpColor(color1, color2, amount) {
@@ -109,7 +110,7 @@
         var sampledColor;
         function paintStroke(x, y) {
              sampledColor = getColorAt(x,y);
-            
+
                 brushColor = lerpColor(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
