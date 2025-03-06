@@ -111,13 +111,7 @@
                 }
             }
             brushCtx.putImageData(imgData, 0, 0);
-
-            return `rgba(
-                ${Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio)},
-                ${Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio)},
-                ${Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio)},
-                1)`;
-        }
+}
         var sampledColor;
         function paintStroke(x, y) {
              sampledColor = getColorAt(x,y);
