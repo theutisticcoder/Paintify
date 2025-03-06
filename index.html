@@ -122,7 +122,7 @@
         function paintStroke(x, y) {
              sampledColor = getColorAt(x,y);
              
-                brushColor = mixColors(sampledColor, brushColor, 0.5);
+                mixColors(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
 
