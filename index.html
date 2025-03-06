@@ -111,12 +111,13 @@
                 brushColor = lerpColor(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
+            updateBrushColor();
 
             // Draw shadow
             ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
             ctx.shadowBlur = 10;
-            ctx.shadowOffsetX = 3;
-            ctx.shadowOffsetY = 3;
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 1;
 
             // Draw paint stroke
             ctx.drawImage(brushCanvas, x - 10, y - 10, 30, 30);
