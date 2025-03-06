@@ -80,7 +80,7 @@
             }
             console.log(x + "," + y)
             const imgData = ctx2.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
-            if(parseInt(imgData[3]) === 0) return `rgba(255,255,255,1.0)`
+            if(parseInt(imgData[3]) === 0) return `rgba(0,0,0,1.0)`
             return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
         }
         function lerpColor(color1, color2, amount) {
