@@ -80,7 +80,6 @@
             }
             console.log(x + "," + y)
             const imgData = ctx2.getImageData(Math.ceil(x), Math.ceil(y), 1, 1).data;
-            if(parseInt(imgData[3]) === 0) return `rgba(0,0,0,1.0)`
             return `rgba(${imgData[0]}, ${imgData[1]}, ${imgData[2]}, ${imgData[3] / 255})`;
         }
         function lerpColor(color1, color2, amount) {
@@ -101,6 +100,16 @@
         function mixColors(color1, color2, mixRatio) {
             const c1 = color1.match(/\d+/g).map(Number);
             const c2 = color2.match(/\d+/g).map(Number);
+            let imgData = brushCtx.getImageData(0, 0, brushCanvas.width, brushCanvas.height);
+            let pixels = imgData.data;
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                if (pixels[i + 3] > 0) { // Color only non-transparent pixels
+                    pixels[i] = Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio); // R
+                    pixels[i + 1] =  Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio);; // G
+                    pixels[i + 2] =  Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio);; // B
+                }
+            }
             return `rgba(
                 ${Math.floor(c1[0] * (1 - mixRatio) + c2[0] * mixRatio)},
                 ${Math.floor(c1[1] * (1 - mixRatio) + c2[1] * mixRatio)},
@@ -110,11 +119,10 @@
         var sampledColor;
         function paintStroke(x, y) {
              sampledColor = getColorAt(x,y);
-
+             
                 brushColor = mixColors(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
-            updateBrushColor();
 
             // Draw shadow
             ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
