@@ -106,8 +106,10 @@
                 ${Math.floor(c1[2] * (1 - mixRatio) + c2[2] * mixRatio)},
                 1)`;
         }
+        var sampledColor;
         function paintStroke(x, y) {
-            const sampledColor = getColorAt(x,y);
+             sampledColor = getColorAt(x,y);
+            
                 brushColor = lerpColor(sampledColor, brushColor, 0.5);
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = "source-over";
