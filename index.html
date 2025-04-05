@@ -47,7 +47,8 @@
         const canvas2 = document.getElementById("canvas2");
         const ctx = canvas.getContext("2d");
         const colorPicker = document.getElementById("colorPicker");
-        ctx.globalCompositeOperation = "lighter";
+        ctx.globalCompositeOperation = "multiply";
+        
 
         // Resize canvas
         canvas.width = window.innerWidth;
