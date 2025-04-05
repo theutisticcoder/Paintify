@@ -47,6 +47,7 @@
         const canvas2 = document.getElementById("canvas2");
         const ctx = canvas.getContext("2d");
         const colorPicker = document.getElementById("colorPicker");
+        ctx.globalCompositeOperation = "lighter";
 
         // Resize canvas
         canvas.width = window.innerWidth;
@@ -161,15 +162,14 @@
                     }
                 }
             }
-                brushCtx.putImageData(imgData, 0, 0);
-            
+            brushCtx.putImageData(imgData, 0, 0);
+
         }
         var sampledColor;
         function paintStroke(x, y) {
             sampledColor = getColorAt(x, y);
             upcolor()
             ctx.globalAlpha = 1.0;
-            ctx.globalCompositeOperation = "source-over";
 
             // Draw shadow
             ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
@@ -186,7 +186,6 @@
             ctx.shadowOffsetY = 0;
 
             // Add highlights (fake light effect)
-            ctx.globalCompositeOperation = "lighter";
             ctx.globalAlpha = 0.2;
             ctx.fillStyle = "white";
             ctx.beginPath();
@@ -214,7 +213,7 @@
 
             shot = new Image();
             shot.src = canvas.toDataURL("image/png");
-            shot.onload = ()=> {
+            shot.onload = () => {
                 ctx2.drawImage(shot, 0, 0, canvas.width, canvas.height)
             }
             lastX = e.offsetX;
